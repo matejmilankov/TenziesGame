@@ -18,14 +18,18 @@ function App() {
     return newDice;
   }
 
-  const [dice, setDice] = useState(generateAllNewDice());
+  const [dice, setDice] = useState(() => generateAllNewDice());
 
   const gameWon = dice.every(die => die.isHeld) && dice.every(die => die.value === dice[0].value);
 
   const rollDice = () => {
-    setDice(prevDice => prevDice.map(prevDie => {
-      return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
-    }));
+    if(!gameWon) {
+      setDice(prevDice => prevDice.map(prevDie => {
+        return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
+      }));
+    } else {
+      setDice(generateAllNewDice());
+    }
   }
 
   const hold = (id) => {
