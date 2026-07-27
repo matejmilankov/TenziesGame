@@ -26,15 +26,15 @@ main {
   height: 100%;
   border-radius: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+  flex-direction: column;
 }
 
 .dice-container {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 20px;
+    display: grid;
+    grid-template: auto auto / repeat(5, 1fr);
+    gap: 20px;
 }
 
 .dice-container>button {
@@ -48,4 +48,14 @@ main {
   font-weight: bold;
   cursor: pointer;
   font-family: Inter, sans-serif;
+}
+
+button.roll-dice {
+    height: 50px;
+    width: 100px;
+    border: none;
+    border-radius: 6px;
+    background-color: #5035FF;
+    color: white;
+    font-size: 1.2rem;
 }
