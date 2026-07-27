@@ -22,13 +22,26 @@ function App() {
   const rollDice = () => {
     setDice(generateAllNewDice());
   }
+
+  const hold = (id) => {
+    setDice(prevDice => prevDice.map(prevDie => {
+      return prevDie.id === id ? {...prevDie, isHeld: !prevDie.isHeld} : prevDie;
+    }));
+  }
   
   return (
     <>
       <main>
 
         <div className='dice-container'>
-          {dice.map(die => <Die key={die.id} value={die.value} isHeld={die.isHeld}/>)}
+          {dice.map(die => (
+            <Die key={die.id} 
+                 value={die.value} 
+                 isHeld={die.isHeld}
+                 hold={() => hold(die.id)}
+            />
+            ) 
+          )}
         </div>
 
         <button 
