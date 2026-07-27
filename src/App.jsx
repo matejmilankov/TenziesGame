@@ -28,7 +28,7 @@ function App() {
       <main>
 
         <div className='dice-container'>
-          {dice.map(die => <Die key={die.id} value={die.value} />)}
+          {dice.map(die => <Die key={die.id} value={die.value} isHeld={die.isHeld}/>)}
         </div>
 
         <button 
