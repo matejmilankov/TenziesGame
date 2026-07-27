@@ -20,7 +20,9 @@ function App() {
   const [dice, setDice] = useState(generateAllNewDice());
 
   const rollDice = () => {
-    setDice(generateAllNewDice());
+    setDice(prevDice => prevDice.map(prevDie => {
+      return prevDie.isHeld ? prevDie : {...prevDie, value: Math.floor(Math.random() * 6)}
+    }));
   }
 
   const hold = (id) => {
