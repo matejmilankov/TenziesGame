@@ -90,6 +90,7 @@ button.roll-dice {
   align-items: center;
   flex-direction: column;
   padding: 15px 0;
+  width: 100%;
 }
 
 .username-container {

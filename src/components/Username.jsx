@@ -8,10 +8,15 @@ export function Username({ handleUsernameSubmit }) {
     }
 
     return(
-        <form action={submitUsername}>
-            <label htmlFor="username">Enter username</label>
-            <input type="text" name="username" required/>
-            <button>Start</button>
-        </form>
+        <div className='username-wraper'>
+            <div>
+                <h1 className="title">Welcome to Tenzis</h1>
+                <p className="instructions">Enter your username so you can be placed at leaderboard</p>
+                <form action={submitUsername}>
+                    <input type="text" name="username" required/>
+                    <button>Start</button>
+                </form>
+            </div>
+        </div>
     );
 }

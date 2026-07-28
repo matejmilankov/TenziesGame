@@ -1,14 +1,28 @@
 form {
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    padding: 0 50px;
-    background-color: #F5F5F5;
     height: 100%;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.username-wraper {
+    background-color: #F5F5F5;
     border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.username-wraper > div {
+    text-align: center;
+}
+
+.username-wraper > div > p {
+    max-width: 250px;
+    margin: 10px auto 25px auto;
 }
 
 input {
@@ -25,16 +39,20 @@ form>label {
 }
 
 form>input {
-    border-bottom: 1px solid black;
+    border: 2px solid lightgrey;
+    height: 30px;
+    border-radius: 10px;
     margin-bottom: 10px;
     background-color: transparent;
     width: 100%;
+    font-size: 16px;
+    text-align: center;
 }
 
 form>button {
     height: 30px;
     white-space: nowrap;
-    width: auto;
+    width: 100%;
     padding: 6px 21px;
     border: none;
     border-radius: 6px;
