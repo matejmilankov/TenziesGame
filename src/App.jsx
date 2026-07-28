@@ -1,28 +1,10 @@
 import './App.css'
 import { Die } from './components/Die'
 import { useState, useRef, useEffect } from 'react';
-import { nanoid } from 'nanoid';
 import { Timer } from './components/Timer';
 import { Username } from './components/Username';
+import { generateAllNewDice, checkWin } from './utils/diceUtils';
 import ReactConfetti from 'react-confetti';
-
-
-const generateAllNewDice = () => {
-  const newDice = [];
-  for (let i = 0; i < 10; i++) {
-    newDice[i] = {
-      id: nanoid(),
-      value: Math.floor(Math.random() * 6),
-      isHeld: false
-    };
-  }
-  return newDice;
-}
-
-const checkWin = (currentDice) => {
-  return currentDice.every(die => die.isHeld) &&
-    currentDice.every(die => die.value === currentDice[0].value);
-}
 
 
 function App() {
