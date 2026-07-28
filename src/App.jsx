@@ -6,6 +6,25 @@ import { Timer } from './components/Timer';
 import { Username } from './components/Username';
 import ReactConfetti from 'react-confetti';
 
+
+const generateAllNewDice = () => {
+  const newDice = [];
+  for (let i = 0; i < 10; i++) {
+    newDice[i] = {
+      id: nanoid(),
+      value: Math.floor(Math.random() * 6),
+      isHeld: false
+    };
+  }
+  return newDice;
+}
+
+const checkWin = (currentDice) => {
+  return currentDice.every(die => die.isHeld) &&
+    currentDice.every(die => die.value === currentDice[0].value);
+}
+
+
 function App() {
 
   const buttonElem = useRef(null);
@@ -14,54 +33,32 @@ function App() {
   const [username, setUsername] = useState("");
   const [gameStatus, setGameStatus] = useState("setup");
 
-  const generateAllNewDice = () => {
-    const newDice = [];
-    for (let i = 0; i < 10; i++) {
-      newDice[i] = {
-        id: nanoid(),
-        value: Math.floor(Math.random() * 6),
-        isHeld: false
-      };
-    }
-    return newDice;
-  }
 
   const [dice, setDice] = useState(() => generateAllNewDice());
 
-  const rollDice = () => {
-    switch(gameStatus) {
-      case "waiting":
-        setDice(generateAllNewDice());
-        setGameStatus("playing");
-        break;
-      case "playing":
-        setRollCounter(prev => prev + 1);
-        setDice(prevDice => prevDice.map(prevDie => {
-          return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
-        }));
-        break;
-      case "won":
-        setDice(generateAllNewDice());
-        setRollCounter(0);
-        setSeconds(0);
-        setGameStatus("waiting");
-    }
+  const startNewGame = () => {
+    setDice(generateAllNewDice());
+    setRollCounter(0);
+    setSeconds(0);
+    setGameStatus("playing");
   }
 
-  const checkWin = (currentDice) => {
-    return currentDice.every(die => die.isHeld) &&
-           currentDice.every(die => die.value === currentDice[0].value);
+  const rollDice = () => {
+    setRollCounter(prev => prev + 1);
+    setDice(prevDice => prevDice.map(prevDie => {
+      return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
+    }));
   }
 
   const hold = (id) => {
-    if(gameStatus != "playing") return;
+    if (gameStatus !== "playing") return;
 
     setDice(prevDice => {
-      const updatedDice = prevDice.map(prevDie => 
+      const updatedDice = prevDice.map(prevDie =>
         prevDie.id === id ? { ...prevDie, isHeld: !prevDie.isHeld } : prevDie
       );
 
-      if(checkWin(updatedDice))
+      if (checkWin(updatedDice))
         setGameStatus("won");
 
       return updatedDice;
@@ -78,17 +75,28 @@ function App() {
     return () => clearInterval(interval);
   }, [gameStatus]);
 
+  useEffect(() => {
+    if (gameStatus === "won")
+      buttonElem.current.focus();
+  }, [gameStatus]);
+
   const handleUsernameSubmit = (username) => {
     setUsername(username);
     setGameStatus("waiting");
   }
 
-  return (
-    <>
-      <main>
+  const buttonConfig = {
+    waiting: { text: "Start game", action: startNewGame },
+    playing: { text: "Roll dice", action: rollDice },
+    won: { text: "New game", action: startNewGame }
+  }
+  const currentButton = buttonConfig[gameStatus];
 
-        {gameStatus !== "setup" ? (
-          <>
+  return (
+    <main>
+
+      {gameStatus !== "setup" ? (
+        <>
           <div className='main-container'>
             {gameStatus === "won" && <ReactConfetti />}
 
@@ -112,22 +120,21 @@ function App() {
             </div>
 
             <button
-              onClick={rollDice}
+              onClick={currentButton?.action}
               className='roll-dice'
               ref={buttonElem}>
-              {gameStatus === "waiting" || gameStatus === "won" ? "New game" : "Roll"}
+              {currentButton?.text}
             </button>
           </div>
           <div className='username-container'>
             username: {username}
           </div>
-          </>
-        ) : (
-          <Username handleUsernameSubmit={handleUsernameSubmit}/>
-        )}
+        </>
+      ) : (
+        <Username handleUsernameSubmit={handleUsernameSubmit} />
+      )}
 
-      </main>
-    </>
+    </main>
   )
 }
 
