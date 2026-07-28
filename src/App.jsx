@@ -7,6 +7,7 @@ import ReactConfetti from 'react-confetti';
 function App() {
 
   const buttonElem = useRef(null);
+  const [rollCounter, setRollCounter] = useState(0);
 
   const generateAllNewDice = () => {
     const newDice = [];
@@ -30,11 +31,13 @@ function App() {
 
   const rollDice = () => {
     if (!gameWon) {
+      setRollCounter(prev => prev + 1);
       setDice(prevDice => prevDice.map(prevDie => {
         return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
       }));
     } else {
       setDice(generateAllNewDice());
+      setRollCounter(0);
     }
   }
 
@@ -52,6 +55,8 @@ function App() {
 
         <h1 className="title">Tenzies</h1>
         <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
+
+        <p>Roll pressed: {rollCounter}</p>
 
         <div className='dice-container'>
           {dice.map(die => (
