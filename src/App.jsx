@@ -28,29 +28,44 @@ function App() {
 
   const [dice, setDice] = useState(() => generateAllNewDice());
 
-  const gameWon = dice.every(die => die.isHeld) && dice.every(die => die.value === dice[0].value);
-
-  useEffect(() => {
-    if (gameWon) buttonElem.current.focus();
-  }, [gameWon]);
-
   const rollDice = () => {
-    if (!gameWon) {
-      setRollCounter(prev => prev + 1);
-      setDice(prevDice => prevDice.map(prevDie => {
-        return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
-      }));
-    } else {
-      setDice(generateAllNewDice());
-      setRollCounter(0);
-      setSeconds(0);
+    switch(gameStatus) {
+      case "waiting":
+        setDice(generateAllNewDice());
+        setGameStatus("playing");
+        break;
+      case "playing":
+        setRollCounter(prev => prev + 1);
+        setDice(prevDice => prevDice.map(prevDie => {
+          return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
+        }));
+        break;
+      case "won":
+        setDice(generateAllNewDice());
+        setRollCounter(0);
+        setSeconds(0);
+        setGameStatus("waiting");
     }
   }
 
+  const checkWin = (currentDice) => {
+    return currentDice.every(die => die.isHeld) &&
+           currentDice.every(die => die.value === currentDice[0].value);
+  }
+
   const hold = (id) => {
-    setDice(prevDice => prevDice.map(prevDie => {
-      return prevDie.id === id ? { ...prevDie, isHeld: !prevDie.isHeld } : prevDie;
-    }));
+    if(gameStatus != "playing") return;
+
+    setDice(prevDice => {
+      const updatedDice = prevDice.map(prevDie => 
+        prevDie.id === id ? { ...prevDie, isHeld: !prevDie.isHeld } : prevDie
+      );
+
+      if(checkWin(updatedDice))
+        setGameStatus("won");
+
+      return updatedDice;
+    });
   }
 
   useEffect(() => {
@@ -65,16 +80,17 @@ function App() {
 
   const handleUsernameSubmit = (username) => {
     setUsername(username);
-    setGameStatus("playing");
+    setGameStatus("waiting");
   }
 
   return (
     <>
       <main>
 
-        {gameStatus === "playing" ? (
+        {gameStatus !== "setup" ? (
           <>
-            {gameWon && <ReactConfetti />}
+          <div className='main-container'>
+            {gameStatus === "won" && <ReactConfetti />}
 
             <h1 className="title">Tenzies</h1>
             <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
@@ -99,8 +115,12 @@ function App() {
               onClick={rollDice}
               className='roll-dice'
               ref={buttonElem}>
-              {gameWon ? "New game" : "Roll"}
+              {gameStatus === "waiting" || gameStatus === "won" ? "New game" : "Roll"}
             </button>
+          </div>
+          <div className='username-container'>
+            username: {username}
+          </div>
           </>
         ) : (
           <Username handleUsernameSubmit={handleUsernameSubmit}/>
