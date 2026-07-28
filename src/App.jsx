@@ -1,10 +1,12 @@
 import './App.css'
 import { Die } from './components/Die'
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import ReactConfetti from 'react-confetti';
 
 function App() {
+
+  const buttonElem = useRef(null);
 
   const generateAllNewDice = () => {
     const newDice = [];
@@ -22,8 +24,12 @@ function App() {
 
   const gameWon = dice.every(die => die.isHeld) && dice.every(die => die.value === dice[0].value);
 
+  useEffect(() => {
+    if(gameWon) buttonElem.current.focus();
+  }, [gameWon]);
+
   const rollDice = () => {
-    if(!gameWon) {
+    if (!gameWon) {
       setDice(prevDice => prevDice.map(prevDie => {
         return prevDie.isHeld ? prevDie : { ...prevDie, value: Math.floor(Math.random() * 6) }
       }));
@@ -60,7 +66,8 @@ function App() {
 
         <button
           onClick={rollDice}
-          className='roll-dice'>
+          className='roll-dice'
+          ref={buttonElem}>
           {gameWon ? "New game" : "Roll"}
         </button>
 
