@@ -2,12 +2,14 @@ import './App.css'
 import { Die } from './components/Die'
 import { useState, useRef, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { Timer } from './components/Timer';
 import ReactConfetti from 'react-confetti';
 
 function App() {
 
   const buttonElem = useRef(null);
   const [rollCounter, setRollCounter] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
   const generateAllNewDice = () => {
     const newDice = [];
@@ -26,7 +28,7 @@ function App() {
   const gameWon = dice.every(die => die.isHeld) && dice.every(die => die.value === dice[0].value);
 
   useEffect(() => {
-    if(gameWon) buttonElem.current.focus();
+    if (gameWon) buttonElem.current.focus();
   }, [gameWon]);
 
   const rollDice = () => {
@@ -38,6 +40,7 @@ function App() {
     } else {
       setDice(generateAllNewDice());
       setRollCounter(0);
+      setSeconds(0);
     }
   }
 
@@ -46,6 +49,16 @@ function App() {
       return prevDie.id === id ? { ...prevDie, isHeld: !prevDie.isHeld } : prevDie;
     }));
   }
+
+  useEffect(() => {
+    let interval = null;
+    if (!gameWon) {
+      interval = setInterval(() => {
+        setSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [gameWon]);
 
   return (
     <>
@@ -56,7 +69,10 @@ function App() {
         <h1 className="title">Tenzies</h1>
         <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
 
-        <p>Roll pressed: {rollCounter}</p>
+        <div className='game-info'>
+          <p>Roll pressed: {rollCounter}</p>
+          <Timer seconds={seconds} />
+        </div>
 
         <div className='dice-container'>
           {dice.map(die => (

@@ -75,3 +75,9 @@ button.roll-dice {
   margin-top: 0;
   text-align: center;
 }
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
