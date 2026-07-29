@@ -1,12 +1,16 @@
 import './App.css'
 import { Die } from './components/Die'
-import { useState, useRef, useEffect } from 'react';
-import { Timer } from './components/Timer';
 import { Username } from './components/Username';
-import { generateAllNewDice, checkWin } from './utils/diceUtils';
+import { Timer } from './components/Timer';
 import ReactConfetti from 'react-confetti';
+
+import { useState, useRef, useEffect } from 'react';
+import { generateAllNewDice, checkWin } from './utils/diceUtils';
+
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+
+import penIcon from './assets/pen-line-svgrepo-com.svg'
 
 gsap.registerPlugin(useGSAP);
 
@@ -20,6 +24,7 @@ function App() {
   const [seconds, setSeconds] = useState(0);
   const [username, setUsername] = useState("");
   const [gameStatus, setGameStatus] = useState("setup");
+  const [isEdit, setIsEdit] = useState(false);
 
 
   const [dice, setDice] = useState(() => generateAllNewDice());
@@ -90,6 +95,12 @@ function App() {
     }
   }, [gameStatus]);
 
+  const handleNewUsername = (formData) => {
+    const newUsername = formData.get("username");
+    setUsername(newUsername.trim());
+    setIsEdit(false);
+  }
+
   return (
     <main>
 
@@ -127,8 +138,17 @@ function App() {
             </div>
 
           </div>
-          <div className='username-container'>
-            username: {username}
+          <div className='username-container' onClick={() => setIsEdit(true)}>
+            <div className='username-info'>
+              <img src={penIcon} alt="pen-icon" />
+              <p>username: {username}</p>
+            </div>
+            {isEdit && (
+              <form action={handleNewUsername} className='new-username-form'>
+                <input type="text" name="username" placeholder='Enter new username'/>
+                <button>Apply</button>
+              </form>
+            )}
           </div>
         </>
       ) : (

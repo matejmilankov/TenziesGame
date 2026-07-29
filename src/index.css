@@ -105,8 +105,31 @@ button.roll-dice {
   margin-top: 10px;
   width: 100%;
   border-radius: 5px;
-  padding: 10px 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+.new-username-form {
+  display: flex;
+  gap: 10px;
+}
+
+.new-username-form button {
+  width: auto;
+}
+
+.username-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.username-info> img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
