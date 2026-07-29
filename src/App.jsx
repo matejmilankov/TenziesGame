@@ -5,11 +5,17 @@ import { Timer } from './components/Timer';
 import { Username } from './components/Username';
 import { generateAllNewDice, checkWin } from './utils/diceUtils';
 import ReactConfetti from 'react-confetti';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(useGSAP);
 
 
 function App() {
 
   const buttonElem = useRef(null);
+  const mainContainer = useRef(null);
+
   const [rollCounter, setRollCounter] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [username, setUsername] = useState("");
@@ -74,39 +80,52 @@ function App() {
   }
   const currentButton = buttonConfig[gameStatus];
 
+  useGSAP(() => {
+    if (gameStatus === "waiting" && mainContainer.current) {
+      gsap.fromTo(
+        mainContainer.current,
+        { opacity: 0, x: 30 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }
+      );
+    }
+  }, [gameStatus]);
+
   return (
     <main>
 
       {gameStatus !== "setup" ? (
         <>
           <div className='main-container'>
-            {gameStatus === "won" && <ReactConfetti />}
+            <div ref={mainContainer}>
+              {gameStatus === "won" && <ReactConfetti />}
 
-            <h1 className="title">Tenzies</h1>
-            <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
+              <h1 className="title">Tenzies</h1>
+              <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
 
-            <div className='game-info'>
-              <p>Roll pressed: {rollCounter}</p>
-              <Timer seconds={seconds} />
+              <div className='game-info'>
+                <p>Roll pressed: {rollCounter}</p>
+                <Timer seconds={seconds} />
+              </div>
+
+              <div className='dice-container'>
+                {dice.map(die => (
+                  <Die key={die.id}
+                    value={die.value}
+                    isHeld={die.isHeld}
+                    hold={() => hold(die.id)}
+                  />
+                )
+                )}
+              </div>
+
+              <button
+                onClick={currentButton?.action}
+                className='roll-dice'
+                ref={buttonElem}>
+                {currentButton?.text}
+              </button>
             </div>
 
-            <div className='dice-container'>
-              {dice.map(die => (
-                <Die key={die.id}
-                  value={die.value}
-                  isHeld={die.isHeld}
-                  hold={() => hold(die.id)}
-                />
-              )
-              )}
-            </div>
-
-            <button
-              onClick={currentButton?.action}
-              className='roll-dice'
-              ref={buttonElem}>
-              {currentButton?.text}
-            </button>
           </div>
           <div className='username-container'>
             username: {username}
