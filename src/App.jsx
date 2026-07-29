@@ -19,6 +19,7 @@ function App() {
 
   const buttonElem = useRef(null);
   const mainContainer = useRef(null);
+  const formElem = useRef(null);
 
   const [rollCounter, setRollCounter] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -97,9 +98,29 @@ function App() {
 
   const handleNewUsername = (formData) => {
     const newUsername = formData.get("username");
-    setUsername(newUsername.trim());
-    setIsEdit(false);
+    if (!newUsername) return;
+    gsap.to(formElem.current,
+      {
+        opacity: 0,
+        height: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+          setUsername(newUsername.trim());
+          setIsEdit(false);
+        }
+      });
   }
+
+  useGSAP(() => {
+    if (isEdit && formElem.current) {
+      gsap.fromTo(
+        formElem.current,
+        { opacity: 0, height: 0},
+        { opacity: 1, height: "auto", duration: 0.5, ease: "power2.out" }
+      );
+    }
+  }, [isEdit]);
 
   return (
     <main>
@@ -144,8 +165,8 @@ function App() {
               <p>username: {username}</p>
             </div>
             {isEdit && (
-              <form action={handleNewUsername} className='new-username-form'>
-                <input type="text" name="username" placeholder='Enter new username'/>
+              <form ref={formElem} action={handleNewUsername} className='new-username-form'>
+                <input type="text" name="username" placeholder='Enter new username' />
                 <button>Apply</button>
               </form>
             )}

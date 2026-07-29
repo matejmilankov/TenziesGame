@@ -115,6 +115,7 @@ button.roll-dice {
 .new-username-form {
   display: flex;
   gap: 10px;
+  overflow: hidden;
 }
 
 .new-username-form button {
