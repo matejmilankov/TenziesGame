@@ -148,7 +148,7 @@ button.roll-dice {
   border-radius: 5px;
   padding: 10px 20px;
   height: calc(100vh - 20px);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .player-score {
