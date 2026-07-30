@@ -10,6 +10,7 @@ import { generateAllNewDice, checkWin } from './utils/diceUtils';
 
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { nanoid } from 'nanoid';
 
 import penIcon from './assets/pen-line-svgrepo-com.svg'
 
@@ -53,16 +54,28 @@ function App() {
   const hold = (id) => {
     if (gameStatus !== "playing") return;
 
-    setDice(prevDice => {
-      const updatedDice = prevDice.map(prevDie =>
-        prevDie.id === id ? { ...prevDie, isHeld: !prevDie.isHeld } : prevDie
+    // Note: Ovo moze jer hold pozivam na klik. A da bi kliknuo, komponente mora biti renderovana
+    // sto znaci da sigurno radi sa najnovijom verzijom promenljive dice
+    const updatedDice = dice.map(die =>
+      die.id === id ? { ...die, isHeld: !die.isHeld } : die
+    );
+
+    setDice(updatedDice);
+
+    if (checkWin(updatedDice)) {
+      setGameStatus("won");
+      setScores(prevScores =>
+        [
+          ...prevScores,
+          {
+            id: nanoid(),
+            username: username,
+            rolls: rollCounter,
+            time: seconds
+          }
+        ]
       );
-
-      if (checkWin(updatedDice))
-        setGameStatus("won");
-
-      return updatedDice;
-    });
+    };
   }
 
   useEffect(() => {
@@ -147,7 +160,7 @@ function App() {
             <hr />
             <div className='players'>
               {sortedScores.map((score, index) => (
-                <PlayerScore 
+                <PlayerScore
                   key={score.id}
                   rank={`${index + 1}.`}
                   score={score}
@@ -157,7 +170,7 @@ function App() {
           </div>
           <div className='main-container'>
             <div ref={mainContainer}>
-              
+
 
               <h1 className="title">Tenzies</h1>
               <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
