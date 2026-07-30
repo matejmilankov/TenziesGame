@@ -51,31 +51,36 @@ function App() {
     }));
   }
 
+  const updateLeaderboard = () => {
+    setScores(prevScores => {
+      const existingPlayer = prevScores.find(prevScore => prevScore.username === username);
+      if(!existingPlayer)
+        return [...prevScores, {id: nanoid(), username: username, time: seconds, rolls: rollCounter}]
+      if(seconds >= existingPlayer.time)
+        return prevScores;
+      return prevScores.map(score => 
+        score.username === username
+        ? {...score, time: seconds, rolls: rollCounter}
+        : score
+      );
+    });
+  }
+
   const hold = (id) => {
     if (gameStatus !== "playing") return;
 
-    // Note: Ovo moze jer hold pozivam na klik. A da bi kliknuo, komponente mora biti renderovana
-    // sto znaci da sigurno radi sa najnovijom verzijom promenljive dice
+    // Note: Ovo moze jer hold pozivam na klik. A da bi kliknuo, komponenta mora biti renderovana
+    // sto znaci da sigurno radi sa najnovijom verzijom promenljive dice.
     const updatedDice = dice.map(die =>
       die.id === id ? { ...die, isHeld: !die.isHeld } : die
     );
-
     setDice(updatedDice);
 
     if (checkWin(updatedDice)) {
       setGameStatus("won");
-      setScores(prevScores =>
-        [
-          ...prevScores,
-          {
-            id: nanoid(),
-            username: username,
-            rolls: rollCounter,
-            time: seconds
-          }
-        ]
-      );
-    };
+      // Note: Isto kao sto je i promenljiva dice bila bezbedna tako su i sve unutar ove f-je
+      updateLeaderboard();
+    }
   }
 
   useEffect(() => {
