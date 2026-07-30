@@ -2,6 +2,7 @@ import './App.css'
 import { Die } from './components/Die'
 import { Username } from './components/Username';
 import { Timer } from './components/Timer';
+import { PlayerScore } from './components/PlayerScore';
 import ReactConfetti from 'react-confetti';
 
 import { useState, useRef, useEffect } from 'react';
@@ -26,6 +27,11 @@ function App() {
   const [username, setUsername] = useState("");
   const [gameStatus, setGameStatus] = useState("setup");
   const [isEdit, setIsEdit] = useState(false);
+  const [scores, setScores] = useState([
+    { id: 1, username: "Stefan", rolls: 12, time: 24 },
+    { id: 2, username: "Marko", rolls: 18, time: 35 },
+    { id: 3, username: "Matej", rolls: 20, time: 20 },
+  ]);
 
 
   const [dice, setDice] = useState(() => generateAllNewDice());
@@ -116,17 +122,38 @@ function App() {
     if (isEdit && formElem.current) {
       gsap.fromTo(
         formElem.current,
-        { opacity: 0, height: 0},
+        { opacity: 0, height: 0 },
         { opacity: 1, height: "auto", duration: 0.5, ease: "power2.out" }
       );
     }
   }, [isEdit]);
+
+  const sortedScores = [...scores].sort((score1, score2) => score1.time - score2.time);
 
   return (
     <main>
 
       {gameStatus !== "setup" ? (
         <>
+          <div className="leaderboard">
+            <h3>Leaderboard</h3>
+            <div className="player-score">
+              <p>Position</p>
+              <p>Username</p>
+              <p>Time</p>
+              <p>Rolls</p>
+            </div>
+            <hr />
+            <div className='players'>
+              {sortedScores.map((score, index) => (
+                <PlayerScore 
+                  key={score.id}
+                  rank={`${index + 1}.`}
+                  score={score}
+                />
+              ))}
+            </div>
+          </div>
           <div className='main-container'>
             <div ref={mainContainer}>
               {gameStatus === "won" && <ReactConfetti />}
@@ -159,6 +186,7 @@ function App() {
             </div>
 
           </div>
+
           <div className='username-container' onClick={() => setIsEdit(true)}>
             <div className='username-info'>
               <img src={penIcon} alt="pen-icon" />
